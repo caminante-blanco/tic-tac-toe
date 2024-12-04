@@ -46,6 +46,6 @@ async function createPlayer(newUsername) {
 }
 
 main().then(async ()=> {
-    await createPlayer("sugma");
+    createPlayer("NewPlayer");
 });
 
