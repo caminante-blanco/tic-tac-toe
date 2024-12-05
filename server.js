@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
-const URL = "mongodb://127.0.0.1/players";
+const express = require('express');
+const { v4: uuidv4 } = require('uuid');
+const mongoURL = "mongodb://127.0.0.1/players";
+
+const app = express();
 
 // connects to the database
-async function main() {
-    await mongoose.connect(URL);
-    console.log("Connected to MongoDB");
-}
+mongoose.connect(mongoURL);
+console.log("Connected to MongoDB");
 
 // This is the schema that will serve as the basis for the players profile
 const playerSchema = new mongoose.Schema({
-    username:{
-       type: String,
-       unique: true,
-    } ,
+    username: String, 
+    uuid: String,
     totalGamesPlayed: Number,
     wins: Number,
     losses: Number,
@@ -27,12 +27,17 @@ const playerSchema = new mongoose.Schema({
     },
 });
 
+// makes the model for the Schema
 const Player = mongoose.model("Player", playerSchema);
 
-// this function will be used in the html to create a new user and save them to the DB
-async function createPlayer(newUsername) {
-    let newAccount = new Player({
-        username: newUsername,
+// this function will be used to create a new User based on a username, If it detects that the username already exists in the database, 
+// then it will not create a newPlayer
+async function createPlayer(Username) {
+    let user = await Player.findOne({username: Username})
+    if (!user)  {
+    newAccount = new Player({
+        username: Username,
+        uuid: uuidv4(),
         totalGamesPlayed: 0,
         wins: 0,
         losses: 0,
@@ -43,9 +48,9 @@ async function createPlayer(newUsername) {
     });
     await newAccount.save();
     console.log("Player created:", newAccount);
+    }
 }
 
-main().then(async ()=> {
-    createPlayer("NewPlayer");
-});
+createPlayer("NewPlayer");
+
 
