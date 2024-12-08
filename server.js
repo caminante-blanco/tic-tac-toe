@@ -30,8 +30,17 @@ const playerSchema = new mongoose.Schema({
 // makes the model for the Schema
 const Player = mongoose.model("Player", playerSchema);
 
+
+// implements login, will return the account json to use for DOM
+app.get('/login/:username', async(req, res) =>{
+    const newUsername =  req.params.username;
+    const account = await createPlayer(newUsername);
+    res.json(account);
+});
+
+
 // this function will be used to create a new User based on a username, If it detects that the username already exists in the database, 
-// then it will not create a newPlayer
+// then it will not create a newPlayer and return that user.
 async function createPlayer(Username) {
     let user = await Player.findOne({username: Username})
     if (!user)  {
@@ -47,10 +56,12 @@ async function createPlayer(Username) {
         rank: "Bronze",
     });
     await newAccount.save();
-    console.log("Player created:", newAccount);
+    return newAccount;
     }
+    return user
 }
 
-createPlayer("NewPlayer");
 
-
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {console.log(`Server running at http://localhost:${PORT}`); });
