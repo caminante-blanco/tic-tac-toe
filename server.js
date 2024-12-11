@@ -7,7 +7,17 @@ const app = express();
 const port = 3000;
 app.use(express.json());
 app.use(express.static("public_html"));
-app.engine("handlebars", engine({ defaultLayout: false }));
+app.engine(
+  "handlebars",
+  engine({
+    helpers: {
+      json: function (object) {
+        return JSON.stringify(object);
+      },
+    },
+    defaultLayout: false,
+  }),
+);
 app.set("view engine", "handlebars");
 app.set("views", "./views");
 
@@ -96,11 +106,45 @@ app.get("/game/:playerUUID/:gameUUID", async (req, res) => {
     if (!game) {
       return res.status(404).send("Game not found");
     }
-    res.send(`This is the game page, ${game.players[0].username}`);
+    const user = await User.findOne({ uuid: req.params.playerUUID });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    const jsonUser = user.toJSON();
+    const jsonGame = game.toJSON();
+    res.render("gamePage", { game: jsonGame, user: jsonUser });
   } catch (error) {
     console.error("Error getting game:", error);
     res.status(500).json({ error: "Failed to get game" });
   }
+});
+
+app.get('/makeMove/:index/:gameUUID', async (req, res) => {
+    try {
+        const { index, gameUUID } = req.params;
+        const { playerUUID } = req.query; 
+
+        const game = await Game.findOne({ uuid: gameUUID });
+        if (!game) {
+            return res.status(404).json({ error: "Game not found" });
+        }
+
+        if (game.board[index] !== "") {
+            return res.status(400).json({ error: "Space already taken" });
+        }
+
+        // Determine the current player (X or O) 
+        const currentPlayer = game.turn % 2 === 0 ? "X" : "O"; 
+        game.board[index] = currentPlayer; 
+        game.turn++; 
+
+        await game.save();
+        res.json({ message: "Move made successfully" }); 
+
+    } catch (error) {
+        console.error("Error making move:", error);
+        res.status(500).json({ error: "Failed to make move" });
+    }
 });
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));

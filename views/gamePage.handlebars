@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>TIC-TAC-TOE - {{user.username}}</title>
+    <title>Tic-Tac-Toe - Game</title>
     <link rel="stylesheet" href="/style.css">
     <meta charset="UTF-8">
 </head>
@@ -25,7 +25,13 @@
                 </div>
             </div>
             <div class="grid">
-                grid
+                <div class="grid-container">
+                    {{#each game.board}}
+                        <div class="grid-item" data-index="{{@index}}">{{this}}</div>
+                    {{/each}}
+                </div>
+                <p id="message"></p>
+                <div id="gameData" style="display: none;">{{{json game}}}</div>
             </div>
             <div class="leaderboard">
                 <div class="title">Ladder</div>
@@ -33,8 +39,7 @@
             </div>
         </div>
     </div>
-    <script src="/loginScript.js"></script>
-        <script src="/newGame.js"></script>
-
+    <script src="/render.js"></script>
+    <script src="/newGame.js"></script>
 </body>
 </html>
