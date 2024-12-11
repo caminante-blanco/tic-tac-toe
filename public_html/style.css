@@ -1,0 +1,57 @@
+
+
+ body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.sections {
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+}
+
+.accountInfo {
+    width: 25%;
+    height: 85vh;
+    border: 5px solid black;
+    border-radius: 5px;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.leaderboard {
+    width: 25%;
+    height: 85vh;
+    border: 5px solid black;
+    border-radius: 5px;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.text {
+    margin-top: 20px;
+}
+
+#loginForm input, #loginForm button {
+    margin: 5px 0;
+}
+
+#logoutButton {
+    margin-top: 20px;
+}
