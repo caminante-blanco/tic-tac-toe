@@ -27,17 +27,40 @@ const playerSchema = new mongoose.Schema({
     },
 });
 
+const gameSchema = new mongoose.Schema ({
+    gameId: String,
+    board: [String],
+    currentPlayer: String,
+    result: String,
+    playerId: {type: mongoose.Schema.Types.ObjectId, ref: "Player"},
+});
+
 // makes the model for the Schema
 const Player = mongoose.model("Player", playerSchema);
+const Game =  mongoose.model("Game", gameSchema);
 
+let currentAccount = null;
 
 // implements login, will return the account json to use for DOM
 app.get('/login/:username', async(req, res) =>{
-    const newUsername =  req.params.username;
+    const newUsername =  req.params.username
     const account = await createPlayer(newUsername);
-    res.json(account);
+    currentAccount = account
+    res.json(currentAccount);
 });
 
+// Starts a new Game
+app.post('/game', async (req, res) => {
+    const newGame = new Game({
+        gameId: uuidv4(),
+        board: ["", "", "", "", "", "", "", "", ""],
+        currentPlayer: "X",
+        result: "ongoing",
+        playerId: currentAccount._id,
+    });
+    await newGame.save();
+    res.json(newGame);
+})
 
 // this function will be used to create a new User based on a username, If it detects that the username already exists in the database, 
 // then it will not create a newPlayer and return that user.
