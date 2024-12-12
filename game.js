@@ -1,27 +1,61 @@
-const readline = require("readline");
-
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
-
 let board = ["", "", "", "", "", "", "", "", ""];
+const cellSize = 200;
 
-function chooseSide() {
-    return Math.random() < 0.5 ? "X" : "O";
-}
+// use if you want to pick sides randomly
+// function chooseSide() {
+//     return Math.random() < 0.5 ? "X" : "O";
+// }
+// const player = chooseSide();
+const player = "X";
+const ai = "O";
 
-const player = chooseSide();
-const ai = player === "X" ? "O" : "X";
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-function boardTUI(board) {
-    console.log(`
-     ${board[0] || " "} | ${board[1] || " "} | ${board[2] || " "}
-    ---+---+---
-     ${board[3] || " "} | ${board[4] || " "} | ${board[5] || " "}
-    ---+---+---
-     ${board[6] || " "} | ${board[7] || " "} | ${board[8] || " "}
-    `);
+function drawBoard() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 4;
+
+    // Draw the grid lines
+    for (let i = 1; i < 3; i++) {
+        // Vertical lines
+        ctx.beginPath();
+        ctx.moveTo(i * cellSize, 0);
+        ctx.lineTo(i * cellSize, canvas.height);
+        ctx.stroke();
+
+        // Horizontal lines
+        ctx.beginPath();
+        ctx.moveTo(0, i * cellSize);
+        ctx.lineTo(canvas.width, i * cellSize);
+        ctx.stroke();
+    }
+
+    // Draw X and O
+    for (let i = 0; i < board.length; i++) {
+        const col = i % 3;
+        const row = Math.floor(i / 3);
+        const x = col * cellSize + cellSize / 2;
+        const y = row * cellSize + cellSize / 2;
+
+        if (board[i] === "X") {
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x - 60, y - 60);
+            ctx.lineTo(x + 60, y + 60);
+            ctx.moveTo(x + 60, y - 60);
+            ctx.lineTo(x - 60, y + 60);
+            ctx.stroke();
+        } else if (board[i] === "O") {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(x, y, 60, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
 }
 
 function checkWinState(board) {
@@ -52,54 +86,6 @@ function move(position, player) {
     return false;
 }
 
-function playerMove(nextTurn) {
-    rl.question("Enter your move (0-8): ", (input) => {
-        const position = parseInt(input, 10);
-        if (
-            !isNaN(position) &&
-            position >= 0 &&
-            position < 9 &&
-            board[position] === ""
-        ) {
-            move(position, player);
-            nextTurn();
-        } else {
-            console.log("Invalid move! Try again.");
-            playerMove(nextTurn);
-        }
-    });
-}
-
-function aiMove(nextTurn) {
-    if (makeWinningMove()) return nextTurn();
-    if (blockPlayer()) return nextTurn();
-
-    if (ai === "O") {
-        if (board[4] === "") {
-            board[4] = ai;
-            return nextTurn();
-        }
-        const middleSquares = [1, 3, 5, 7];
-        for (const square of middleSquares) {
-            if (board[square] === "") {
-                board[square] = ai;
-                return nextTurn();
-            }
-        }
-    }
-
-    if (ai === "X") {
-        if (board[0] === "") board[0] = ai;
-        else if (board[8] === player) board[2] = ai;
-        else if (board[8] === "") board[8] = ai;
-        else if (board[6] === "") board[6] = ai;
-        else playInAvailableCorner();
-    } else {
-        playInAvailableCorner();
-    }
-    nextTurn();
-}
-
 function makeWinningMove() {
     if (board[0] === ai && board[1] === ai && board[2] === "")
         return (board[2] = ai);
@@ -123,105 +109,78 @@ function makeWinningMove() {
 function blockPlayer() {
     if (board[0] === player && board[1] === player && board[2] === "")
         return (board[2] = ai);
-    if (board[0] === player && board[2] === player && board[1] === "")
-        return (board[1] = ai);
-    if (board[1] === player && board[2] === player && board[0] === "")
-        return (board[0] = ai);
-
     if (board[3] === player && board[4] === player && board[5] === "")
         return (board[5] = ai);
-    if (board[3] === player && board[5] === player && board[4] === "")
-        return (board[4] = ai);
-    if (board[4] === player && board[5] === player && board[3] === "")
-        return (board[3] = ai);
-
     if (board[6] === player && board[7] === player && board[8] === "")
         return (board[8] = ai);
-    if (board[6] === player && board[8] === player && board[7] === "")
-        return (board[7] = ai);
-    if (board[7] === player && board[8] === player && board[6] === "")
-        return (board[6] = ai);
-
     if (board[0] === player && board[3] === player && board[6] === "")
         return (board[6] = ai);
-    if (board[0] === player && board[6] === player && board[3] === "")
-        return (board[3] = ai);
-    if (board[3] === player && board[6] === player && board[0] === "")
-        return (board[0] = ai);
-
     if (board[1] === player && board[4] === player && board[7] === "")
         return (board[7] = ai);
-    if (board[1] === player && board[7] === player && board[4] === "")
-        return (board[4] = ai);
-    if (board[4] === player && board[7] === player && board[1] === "")
-        return (board[1] = ai);
-
     if (board[2] === player && board[5] === player && board[8] === "")
         return (board[8] = ai);
-    if (board[2] === player && board[8] === player && board[5] === "")
-        return (board[5] = ai);
-    if (board[5] === player && board[8] === player && board[2] === "")
-        return (board[2] = ai);
-
     if (board[0] === player && board[4] === player && board[8] === "")
         return (board[8] = ai);
-    if (board[0] === player && board[8] === player && board[4] === "")
-        return (board[4] = ai);
-    if (board[4] === player && board[8] === player && board[0] === "")
-        return (board[0] = ai);
-
     if (board[2] === player && board[4] === player && board[6] === "")
         return (board[6] = ai);
-    if (board[2] === player && board[6] === player && board[4] === "")
-        return (board[4] = ai);
-    if (board[4] === player && board[6] === player && board[2] === "")
-        return (board[2] = ai);
-
     return false;
 }
-function playInAvailableCorner() {
-    if (board[0] === "") return (board[0] = ai);
-    if (board[2] === "") return (board[2] = ai);
-    if (board[6] === "") return (board[6] = ai);
-    if (board[8] === "") return (board[8] = ai);
-    for (let i = 0; i < 9; i++) {
-        if (board[i] === "") {
-            board[i] = ai;
-            return;
+
+function aiMove() {
+    if (makeWinningMove()) return;
+    if (blockPlayer()) return;
+
+    if (board[0] === "") board[0] = ai;
+    else if (board[4] === "") board[4] = ai;
+    else {
+        for (let i = 0; i < board.length; i++) {
+            if (board[i] === "") {
+                board[i] = ai;
+                break;
+            }
         }
     }
 }
 
-function nextTurn(turn) {
-    boardTUI(board);
+function nextTurn() {
+    drawBoard();
     const winner = checkWinState(board);
     if (winner) {
-        console.log(`${winner} wins!`);
-        rl.close();
+        alert(`${winner} wins!`);
+        resetGame();
         return;
     }
-    if (turn >= 9) {
-        console.log("It's a draw!");
-        rl.close();
+    if (board.every((cell) => cell !== "")) {
+        alert("Draw!");
+        resetGame();
         return;
-    }
-    if (
-        (turn % 2 === 0 && player === "X") ||
-        (turn % 2 === 1 && player === "O")
-    ) {
-        playerMove(() => nextTurn(turn + 1));
-    } else {
-        aiMove(() => nextTurn(turn + 1));
     }
 }
 
-boardTUI(board);
+canvas.addEventListener("click", (event) => {
+    
 
-if (player === "X") {
-    nextTurn(0);
-} else {
-    aiMove(() => {
-        boardTUI(board);
-        playerMove(() => nextTurn(2));
-    });
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const col = Math.floor(x / cellSize);
+    const row = Math.floor(y / cellSize);
+    const index = row * 3 + col;
+
+    if (board[index] === "") {
+        board[index] = player;
+        nextTurn();
+        
+            aiMove();
+            nextTurn();
+    
+    }
+});
+
+function resetGame() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    drawBoard();
 }
+
+resetGame();
