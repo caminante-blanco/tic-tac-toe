@@ -109,20 +109,60 @@ function makeWinningMove() {
 function blockPlayer() {
     if (board[0] === player && board[1] === player && board[2] === "")
         return (board[2] = ai);
+    if (board[0] === player && board[2] === player && board[1] === "")
+        return (board[1] = ai);
+    if (board[1] === player && board[2] === player && board[0] === "")
+        return (board[0] = ai);
+
     if (board[3] === player && board[4] === player && board[5] === "")
         return (board[5] = ai);
+    if (board[3] === player && board[5] === player && board[4] === "")
+        return (board[4] = ai);
+    if (board[4] === player && board[5] === player && board[3] === "")
+        return (board[3] = ai);
+
     if (board[6] === player && board[7] === player && board[8] === "")
         return (board[8] = ai);
+    if (board[6] === player && board[8] === player && board[7] === "")
+        return (board[7] = ai);
+    if (board[7] === player && board[8] === player && board[6] === "")
+        return (board[6] = ai);
+
     if (board[0] === player && board[3] === player && board[6] === "")
         return (board[6] = ai);
+    if (board[0] === player && board[6] === player && board[3] === "")
+        return (board[3] = ai);
+    if (board[3] === player && board[6] === player && board[0] === "")
+        return (board[0] = ai);
+
     if (board[1] === player && board[4] === player && board[7] === "")
         return (board[7] = ai);
+    if (board[1] === player && board[7] === player && board[4] === "")
+        return (board[4] = ai);
+    if (board[4] === player && board[7] === player && board[1] === "")
+        return (board[1] = ai);
+
     if (board[2] === player && board[5] === player && board[8] === "")
         return (board[8] = ai);
+    if (board[2] === player && board[8] === player && board[5] === "")
+        return (board[5] = ai);
+    if (board[5] === player && board[8] === player && board[2] === "")
+        return (board[2] = ai);
+
     if (board[0] === player && board[4] === player && board[8] === "")
         return (board[8] = ai);
+    if (board[0] === player && board[8] === player && board[4] === "")
+        return (board[4] = ai);
+    if (board[4] === player && board[8] === player && board[0] === "")
+        return (board[0] = ai);
+
     if (board[2] === player && board[4] === player && board[6] === "")
         return (board[6] = ai);
+    if (board[2] === player && board[6] === player && board[4] === "")
+        return (board[4] = ai);
+    if (board[4] === player && board[6] === player && board[2] === "")
+        return (board[2] = ai);
+
     return false;
 }
 
