@@ -127,6 +127,31 @@ app.get("/game/:playerUUID/:gameUUID", async (req, res) => {
   }
 });
 
+app.get("/joinGame/:gameUUID", async (req, res) => {
+    try {
+        const { gameUUID } = req.params;
+        const { playerUUID } = req.query;
+    
+        const game = await Game.findOne({ uuid: gameUUID });
+        if (!game) {
+        return res.status(404).json({ error: "Game not found" });
+        }
+    
+        const user = await User.findOne({ uuid: playerUUID });
+        if (!user) {
+        return res.status(404).json({ error: "User not found" });
+        }
+    
+        game.players.push(user._id);
+        await game.save();
+    
+        res.redirect(`/game/${playerUUID}/${gameUUID}`);
+    } catch (error) {
+        console.error("Error joining game:", error);
+        res.status(500).json({ error: "Failed to join game" });
+    }
+    });
+
 app.get("/makeMove/:index/:gameUUID", async (req, res) => {
   try {
     const { index, gameUUID } = req.params;
