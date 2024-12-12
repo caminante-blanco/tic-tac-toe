@@ -1,28 +1,45 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  const accountDetails = document.getElementById("accountDetails");
+  const welcomeMessage = document.getElementById("welcomeMessage");
+  const statsMessage = document.getElementById("statsMessage");
+  const logoutButton = document.getElementById("logoutButton");
+  const usernameInput = document.getElementById("username");
 
-document.getElementById("loginForm").addEventListener("submit", function (event) {
+  loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const username = document.getElementById("username").value.trim();
+    const username = usernameInput.value.trim();
 
     if (!username) {
-        alert("Please enter a valid username.");
-        return;
+      alert("Please enter a valid username.");
+      return;
     }
 
-    const welcomeMessage = document.getElementById("welcomeMessage");
     welcomeMessage.textContent = `Welcome, ${username}!`;
-
-    // user data will go here
-    const statsMessage = document.getElementById("statsMessage");
     statsMessage.textContent = "User data will display here: 1234";
 
-    document.getElementById("loginForm").style.display = "none";
-    document.getElementById("accountDetails").style.display = "block";
+    loginForm.style.display = "none";
+    accountDetails.style.display = "block";
+
+    try {
+      const response = await fetch(`/login/${username}`, {
+        method: "POST",
+      });
+      if (response.redirected) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("An error occurred during login.");
+    }
+  });
+
+  logoutButton.addEventListener("click", () => {
+    usernameInput.value = "";
+    loginForm.style.display = "flex";
+    accountDetails.style.display = "none";
+  });
 });
 
-document.getElementById("logoutButton").addEventListener("click", function () {
-    document.getElementById("username").value = "";
-    document.getElementById("loginForm").style.display = "flex";
-    document.getElementById("accountDetails").style.display = "none";
-});
 
