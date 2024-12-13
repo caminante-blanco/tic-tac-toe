@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             loginForm.style.display = "none";
-            accountDetails.style.display = "block";
 
             try {
                 const response = await fetch(`/login/${username}`, {
