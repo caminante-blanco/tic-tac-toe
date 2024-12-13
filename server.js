@@ -99,17 +99,31 @@ app.get("/newgame", async (req, res) => {
         const playerUUID = req.query.player;
         const user = await User.findOne({ uuid: playerUUID });
         if (!user) return res.status(404).json({ error: "User not found" });
-        const newGame = new Game({
-            uuid: uuidv4(),
-            ai: isAIGame,
-            players: [user._id],
-        });
-        await newGame.save();
-        res.redirect(`/game/${playerUUID}/${newGame.uuid}`);
+
+        if (isAIGame) {
+            // res.render("aiGame", { user: user.toJSON() });
+            // res.render("userPage", { user: jsonUser });
+            res.redirect(`/aigame/`);
+            return;
+        }
+        else{
+            const newGame = new Game({
+                uuid: uuidv4(),
+                ai: isAIGame,
+                players: [user._id],
+            });
+            await newGame.save();
+            res.redirect(`/game/${playerUUID}/${newGame.uuid}`);
+        }
+
     } catch (error) {
         res.status(500).json({ error: "Failed to create new game" });
     }
 });
+
+app.get("/aigame/", async(req, res)=>{
+        res.render("aiGame");
+    });
 
 app.get("/game/:playerUUID/:gameUUID", async (req, res) => {
     try {
