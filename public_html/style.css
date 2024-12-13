@@ -1,6 +1,4 @@
-
-
- body {
+body {
     margin: 0;
     font-family: Arial, sans-serif;
 }
@@ -99,6 +97,8 @@
 .leaderboard {
     width: 25%;
     height: 85vh;
+    border: 5px solid black;
+    border-radius: 5px;
     text-align: center;
     padding: 20px;
     box-sizing: border-box;

@@ -143,6 +143,31 @@ app.get("/joinGame/:gameUUID", async (req, res) => {
     }
 });
 
+app.get("/joinGame/:gameUUID", async (req, res) => {
+    try {
+        const { gameUUID } = req.params;
+        const { playerUUID } = req.query;
+    
+        const game = await Game.findOne({ uuid: gameUUID });
+        if (!game) {
+        return res.status(404).json({ error: "Game not found" });
+        }
+    
+        const user = await User.findOne({ uuid: playerUUID });
+        if (!user) {
+        return res.status(404).json({ error: "User not found" });
+        }
+    
+        game.players.push(user._id);
+        await game.save();
+    
+        res.redirect(`/game/${playerUUID}/${gameUUID}`);
+    } catch (error) {
+        console.error("Error joining game:", error);
+        res.status(500).json({ error: "Failed to join game" });
+    }
+    });
+
 app.get("/makeMove/:index/:gameUUID", async (req, res) => {
     try {
         const { index, gameUUID } = req.params;
@@ -256,6 +281,16 @@ app.get("/makeMove/:index/:gameUUID", async (req, res) => {
         res.status(500).json({ error: "Failed to make move" });
     }
 });
+
+app.get("/getAllUserInfo", async(req,res) => {
+  try {
+  const playerInfo = await User.find().sort({wins: -1}).lean();
+  res.json(playerInfo);
+  } catch (error) {
+    console.error("Error fetching user information:", error);
+    res.status(500).json({error: "failed to get info"});
+  }
+})
 
 app.get("/help", (req, res) => {
     res.render("helpPage");

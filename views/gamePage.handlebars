@@ -41,6 +41,22 @@
               <div class="grid-item" data-index="{{@index}}">{{this}}</div>
             {{/each}}
           </div>
+          <p id="message"></p>
+          <div id="gameData" style="display: none;">{{{json game}}}</div>
+        </div>
+        <div class="leaderboard">
+          <div class="title">Ladder</div>
+            <div id = "Place1"> </div>
+            <div id = "Place2"> </div>
+            <div id = "Place3"> </div>
+            <div id = "Place4"> </div>
+            <div id = "Place5"> </div>
+            <div id = "Place6"> </div>
+            <div id = "Place7"> </div>
+            <div id = "Place8"> </div>
+            <div id = "Place9"> </div>
+            <div id = "Place10"> </div>
+        </div>
           <div style="text-align:center">
           <p id="message"></p>
           </div>
@@ -53,6 +69,7 @@
     </div>
     <script src="/render.js"></script>
     <script src="/newGame.js"></script>
+    <script src= "/Leaderboard.js"></script>
     <script src="/loginScript.js"></script>
   </body>
 </html>
