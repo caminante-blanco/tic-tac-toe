@@ -15,10 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Please enter a valid username.");
       return;
     }
-
-    welcomeMessage.textContent = `Welcome, ${username}!`;
-    statsMessage.textContent = "User data will display here: 1234";
-
     loginForm.style.display = "none";
     accountDetails.style.display = "block";
 
