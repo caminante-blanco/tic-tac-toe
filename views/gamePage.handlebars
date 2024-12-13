@@ -33,6 +33,7 @@
             </div>
                         <p>Game code: {{game.uuid}}</p>
           </div>
+          <button id="helpButton">Help</button>
         </div>
         <div class="grid">
           <div class="grid-container">
@@ -56,10 +57,19 @@
             <div id = "Place9"> </div>
             <div id = "Place10"> </div>
         </div>
+          <div style="text-align:center">
+          <p id="message"></p>
+          </div>
+          <div id="gameData" style="display: none;">{{{json game}}}</div>
+        </div>
+        <div class="leaderboard">
+          <div class="title"></div>
+          </div>
       </div>
     </div>
     <script src="/render.js"></script>
     <script src="/newGame.js"></script>
     <script src= "/Leaderboard.js"></script>
+    <script src="/loginScript.js"></script>
   </body>
 </html>
