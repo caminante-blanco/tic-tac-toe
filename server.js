@@ -154,34 +154,81 @@ app.get("/joinGame/:gameUUID", async (req, res) => {
 
 app.get("/makeMove/:index/:gameUUID", async (req, res) => {
   try {
-    const { index, gameUUID } = req.params;
-    const { playerUUID } = req.query;
+    const { index, gameUUID } = req.params
+    const { playerUUID } = req.query
+    const game = await Game.findOne({ uuid: gameUUID }).populate("players")
+    if (!game) return res.status(404).json({ error: "Game not found" })
+    if (game.gameOver) return res.status(400).json({ error: "Game is already over." })
+    const currentPlayerMark = game.turn % 2 === 0 ? "X" : "O"
+    const currentPlayerIndex = game.turn % 2
+    const user = await User.findOne({ uuid: playerUUID })
+    if (!user) return res.status(404).json({ error: "User not found." })
 
-    const game = await Game.findOne({ uuid: gameUUID });
-    if (!game) {
-      return res.status(404).json({ error: "Game not found" });
+    const playerIsInGame = game.players.some(id => id.equals(user._id))
+    const playerIsInFirstTwo = game.players.slice(0, 2).some(id => id.equals(user._id))
+
+    if (game.players.length > 2 && !playerIsInFirstTwo)
+      return res.status(403).json({ error: "You are not a player in this game." })
+    if (game.players.length <= 2 && !playerIsInGame)
+      return res.status(403).json({ error: "You are not a player in this game." })
+
+    if (!game.players[currentPlayerIndex].equals(user._id))
+      return res.status(403).json({ error: "It's not your turn." })
+
+    if (game.board[index] !== "") return res.status(400).json({ error: "Space already taken." })
+
+    game.board[index] = currentPlayerMark
+    game.turn++
+    const winnerMark = checkWinner(game.board)
+    const isBoardFull = game.board.every(c => c !== "")
+
+    if (winnerMark) {
+      game.gameOver = true
+      const winnerUser = winnerMark === "X" ? game.players[0] : game.players[1]
+      game.winner = winnerUser.username
+    } else if (isBoardFull) {
+      game.gameOver = true
+      game.winner = null
     }
 
-    // Check if space is already taken
-    if (game.board[index] !== "") {
-      return res.status(400).json({ error: "Space already taken" });
+    await game.save()
+
+    if (game.gameOver && game.players.length >= 2) {
+      const playerX = await User.findById(game.players[0])
+      const playerO = await User.findById(game.players[1])
+      if (playerX && playerO) {
+        if (game.winner === playerX.username) {
+          playerX.wins++
+          playerO.losses++
+        } else if (game.winner === playerO.username) {
+          playerO.wins++
+          playerX.losses++
+        } else {
+          playerX.cats++
+          playerO.cats++
+        }
+        await playerX.save()
+        await playerO.save()
+      }
     }
 
-    // Determine the current player (X or O)
-    const currentPlayer = game.turn % 2 === 0 ? "X" : "O";
-    game.board[index] = currentPlayer;
-    game.turn++;
-
-    await game.save();
-    res.json({ message: "Move made successfully" });
-
-    // Notify all connected clients in this game's room that the state changed
-    io.to(gameUUID).emit("gameStateChanged", { gameUUID, changed: true });
+    res.json({ message: "Move made successfully", winner: game.winner, gameOver: game.gameOver })
+    io.to(gameUUID).emit("gameStateChanged", { gameUUID, changed: true })
   } catch (error) {
-    console.error("Error making move:", error);
-    res.status(500).json({ error: "Failed to make move" });
+    res.status(500).json({ error: "Failed to make move" })
   }
-});
+})
 
+function checkWinner(board) {
+  const combos = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ]
+  for (const [a,b,c] of combos) {
+    if (board[a] && board[a] === board[b] && board[b] === board[c]) return board[a]
+  }
+  return null
+}
 server.listen(port, () => console.log(`Server listening on port ${port}`));
 
