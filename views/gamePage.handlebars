@@ -1,75 +1,61 @@
 <html lang="en">
-  <head>
-    <title>Tic-Tac-Toe - Game</title>
-    <link rel="stylesheet" href="/style.css" />
-    <meta charset="UTF-8" />
-    <script src="/socket.io/socket.io.js"></script>
-  </head>
-  <body>
-    <div class="container">
-      <div class="title">TIC-TAC-TOE</div>
-      <div class="sections">
-        <div class="accountInfo">
-          <div class="title">Account</div>
-          <div class="text">
-            <div id="accountDetails">
-              <div id="accountStats">
-                <p id="welcomeMessage">Welcome, {{user.username}}!</p>
-                <p id="statsMessage">Wins:
-                  {{user.wins}}, Losses:
-                  {{user.losses}}, Draws:
-                  {{user.cats}}</p>
-              </div>
-              <input type="hidden" id="playerUUID" value="{{user.uuid}}" />
-              <label for="aiGame">Play against AI:</label>
-              <input type="checkbox" id="aiGame" />
-              <button id="newGameButton">New Game</button>
-              <button id="joinGameButton">Join Game</button>
-              <input
-                type="text"
-                id="gameJoinCode"
-                placeholder="Enter game code"
-              />
+<head>
+  <title>Tic-Tac-Toe - Game</title>
+  <link rel="stylesheet" href="/style.css" />
+  <meta charset="UTF-8" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="title">TIC-TAC-TOE</div>
+    <div class="sections">
+      <div class="accountInfo">
+        <div class="title">Account</div>
+        <div class="text">
+          <div id="accountDetails">
+            <div id="accountStats">
+              <p id="welcomeMessage">Welcome, {{user.username}}!</p>
+              <p id="statsMessage">Wins: {{user.wins}}, Losses: {{user.losses}}, Draws: {{user.cats}}</p>
             </div>
-                        <p>Game code: {{game.uuid}}</p>
+            <input type="hidden" id="playerUUID" value="{{user.uuid}}" />
+            <label for="aiGame">Play against AI:</label>
+            <input type="checkbox" id="aiGame" />
+            <button id="newGameButton">New Game</button>
+            <button id="joinGameButton">Join Game</button>
+            <input type="text" id="gameJoinCode" placeholder="Enter game code" />
           </div>
-          <button id="helpButton">Help</button>
+          <p>Game code: {{game.uuid}}</p>
         </div>
-        <div class="grid">
-          <div class="grid-container">
-            {{#each game.board}}
-              <div class="grid-item" data-index="{{@index}}">{{this}}</div>
-            {{/each}}
-          </div>
-          <p id="message"></p>
-          <div id="gameData" style="display: none;">{{{json game}}}</div>
+        <button id="helpButton">Help</button>
+      </div>
+      <div class="grid">
+        <div class="grid-container">
+          {{#each game.board}}
+            <div class="grid-item" data-index="{{@index}}">{{this}}</div>
+          {{/each}}
         </div>
-        <div class="leaderboard">
-          <div class="title">Ladder</div>
-            <div id = "Place1"> </div>
-            <div id = "Place2"> </div>
-            <div id = "Place3"> </div>
-            <div id = "Place4"> </div>
-            <div id = "Place5"> </div>
-            <div id = "Place6"> </div>
-            <div id = "Place7"> </div>
-            <div id = "Place8"> </div>
-            <div id = "Place9"> </div>
-            <div id = "Place10"> </div>
-        </div>
-          <div style="text-align:center">
-          <p id="message"></p>
-          </div>
-          <div id="gameData" style="display: none;">{{{json game}}}</div>
-        </div>
-        <div class="leaderboard">
-          <div class="title"></div>
-          </div>
+        <p id="message" style="text-align:center"></p>
+        <div id="gameData" style="display: none;">{{{json game}}}</div>
+      </div>
+      <div class="leaderboard">
+        <div class="title">Ladder</div>
+        <div id="Place1"></div>
+        <div id="Place2"></div>
+        <div id="Place3"></div>
+        <div id="Place4"></div>
+        <div id="Place5"></div>
+        <div id="Place6"></div>
+        <div id="Place7"></div>
+        <div id="Place8"></div>
+        <div id="Place9"></div>
+        <div id="Place10"></div>
       </div>
     </div>
-    <script src="/render.js"></script>
-    <script src="/newGame.js"></script>
-    <script src= "/Leaderboard.js"></script>
-    <script src="/loginScript.js"></script>
-  </body>
+  </div>
+  <script src="/render.js"></script>
+  <script src="/newGame.js"></script>
+  <script src="/Leaderboard.js"></script>
+  <script src="/loginScript.js"></script>
+</body>
 </html>
+
